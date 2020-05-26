@@ -1,4 +1,5 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -15,8 +16,9 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import DashboardRoundedIcon from '@material-ui/icons/DashboardRounded';
+import TableChartRoundedIcon from '@material-ui/icons/TableChartRounded';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
   
 const drawerWidth = 240;
 
@@ -80,12 +82,16 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  link: {
+    textDecoration: 'none',
+    color: 'black'
+  }
 }));
 
-function Main() {
+function Main({ children }) {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -117,7 +123,7 @@ function Main() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            Mini variant drawer
+            AutoSafe
           </Typography>
         </Toolbar>
       </AppBar>
@@ -141,29 +147,31 @@ function Main() {
         </div>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
+          <Link to='/usuario' className={classes.link}> 
+            <ListItem button>
+              <ListItemIcon><AccountCircleIcon /></ListItemIcon>
+              <ListItemText primary='Usuário' />
             </ListItem>
-          ))}
+          </Link>
         </List>
         <Divider />
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
+          <Link to='/estatisticas' className={classes.link}> 
+            <ListItem button>
+              <ListItemIcon><DashboardRoundedIcon /></ListItemIcon>
+              <ListItemText primary='Estatísticas' />
             </ListItem>
-          ))}
+          </Link>
+          <Link to='/veiculos' className={classes.link}> 
+            <ListItem button>
+              <ListItemIcon><TableChartRoundedIcon /></ListItemIcon>
+              <ListItemText primary='Cadastro de Veículos' />
+            </ListItem>
+          </Link>
         </List>
+        <Divider />
       </Drawer>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        <Typography paragraph>
-          Projeto AutoSafe
-        </Typography>
-      </main>
+      { children }
     </div>
   );
 }
