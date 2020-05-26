@@ -16,7 +16,7 @@ function Login({ history }) {
         });
 
         if (response.status === 200) {
-            history.push('/estisticas');
+            history.push('/estatisticas');
         }
     }
 
