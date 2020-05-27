@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment,useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -19,6 +19,8 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Button from '../Button';
+import Modal from '../Modal';
+import api from '../../services/api';
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -109,8 +111,8 @@ export default function TableComponent(props) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [open, setOpen] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const data = props.data;
-    console.log(data)
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
     const handleChangePage = (event, newPage) => {
@@ -122,9 +124,23 @@ export default function TableComponent(props) {
         setPage(0);
     };
 
+    const handleOpenModal = (state) => {
+        !state ? setOpenModal(false) : setOpenModal(true);
+    }
+
+    async function handleDelete(id) {
+        const response = await api.delete(`/api/cars/${id}`);
+
+        return response;
+    }
+
     return (
         <>
-            <Button variant="contained" color="primary" ariaLabel="adicionar" size="small" text='Adicionar' icon={<AddIcon />}/>
+            <Button variant="contained" color="primary" ariaLabel="adicionar" size="small" text='Adicionar' icon={<AddIcon />} onClick={handleOpenModal}/>
+            <Modal 
+                state={openModal} 
+                handleOpenModal={handleOpenModal} 
+            />
             <TableContainer component={Paper} className={classes.alignTable}>
                 <Table className={classes.table} aria-label="custom pagination table">
                     <TableHead>
@@ -156,7 +172,7 @@ export default function TableComponent(props) {
                                     <TableCell align="right">{row.ownerName}</TableCell>
                                     <TableCell align="right">{row.ownerCNH}</TableCell>
                                     <TableCell align="right">
-                                        <IconButton aria-label="delete">
+                                        <IconButton aria-label="delete" onClick={() => handleDelete(row.id)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell> 

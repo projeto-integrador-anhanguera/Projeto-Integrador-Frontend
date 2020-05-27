@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Button from '../Button';
 import api from '../../services/api';
 
 function Login({ history }) {
@@ -38,14 +38,10 @@ function Login({ history }) {
                                 <TextField required id='outlined-basic' label='Password' type="password" variant='outlined' className='input-password-login grid-xs-12' value={password} onChange={event => setPassword(event.target.value)} />
                             </div>
                             <div className='button-login'>
-                                <Button variant='contained' color='primary' className='button-login grid-xs-12' type='submit'>
-                                    Login
-                                </Button>
+                                <Button variant='contained' color='primary' className='button-login grid-xs-12' type='submit' text='Login' />
                             </div>
                             <div className='button-login-register'>
-                                <Button variant='contained' color='primary' className='button-login-register grid-xs-12' type='submit' onClick={() => renderRegister()}>
-                                    Cadastre-se
-                                </Button>
+                                <Button variant='contained' color='primary' className='button-login-register grid-xs-12' type='submit' onClick={() => renderRegister()} text='Cadastre-se' />
                             </div>
                         </div>
                     </form>
