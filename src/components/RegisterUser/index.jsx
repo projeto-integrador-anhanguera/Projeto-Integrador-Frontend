@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Button from '../Button';
 import api from '../../services/api';
 
 function RegisterUser({ history }) {
@@ -17,12 +17,12 @@ function RegisterUser({ history }) {
         });
 
         if (response.status === 200) {
-            history.push('/login');
+            history.push('/');
         } 
     }
 
     function renderLogin() {
-        history.push('/login');
+        history.push('/');
     }
 
     return (
@@ -43,14 +43,10 @@ function RegisterUser({ history }) {
                                 <TextField required id='outlined-basic' label='Password' type="password" variant='outlined' className='input-password grid-xs-12' value={password} onChange={event => setPassword(event.target.value)} />
                             </div>
                             <div className='button-register'>
-                                <Button variant='contained' color='primary' className='button-register grid-xs-12' type='submit'>
-                                    Cadastre-se
-                                </Button>
+                                <Button variant='contained' color='primary' className='button-register grid-xs-12' type='submit' text='Cadastre-se' />
                             </div>
                             <div className='button-register-login'>
-                                <Button variant='contained' color='primary' className='button-register-login grid-xs-12' type='submit' onClick={() => renderLogin()}>
-                                    Login
-                                </Button>
+                                <Button variant='contained' color='primary' className='button-register-login grid-xs-12' type='submit' onClick={() => renderLogin()} text='Login' />
                             </div>
                         </div>
                     </form>

@@ -99,6 +99,7 @@ body {
     display: flex;
     justify-content: space-between;
     top: 36px;
+    width: 100%;
 }
 
 .button-register-login {
@@ -111,4 +112,25 @@ body {
     display: flex;
     justify-content: space-between;
     top: 48px;
+}
+
+.input-modal-form {
+    display: flex;
+    width: 100%;
+}
+
+.align-input-modal-form {
+    padding: 4px;
+    width: 100%;
+}
+
+.MuiFormControl-marginDense {
+    margin-top: 8px;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.MuiDialog-paperWidthSm {
+    /* max-width: 600px; */
+    width: 100em !important;
 }
