@@ -35,6 +35,10 @@ body {
     width: calc(100% + 16px);
 }
 
+.div-main-login {
+    width: calc(100% + 16px); 
+}
+
 .grid-xs-12 {
     flex-grow: 0;
     max-width: 100%;

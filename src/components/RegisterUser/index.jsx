@@ -3,8 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import api from '../../services/api';
 
-function Register({ history }) {
-
+function RegisterUser({ history }) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [lastName, setLastName] = useState('');
@@ -61,4 +60,4 @@ function Register({ history }) {
     );
 }
 
-export default memo(Register);
+export default memo(RegisterUser);

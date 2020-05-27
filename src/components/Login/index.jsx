@@ -16,12 +16,12 @@ function Login({ history }) {
         });
 
         if (response.status === 200) {
-            history.push('/main');
+            history.push('/estatisticas');
         }
     }
 
     function renderRegister() {
-        history.push('/');
+        history.push('/register');
     }
 
     return (
@@ -30,7 +30,7 @@ function Login({ history }) {
                 <h1 className='signin-login'>Sign In</h1>
                 <div>
                     <form className='form-login' onSubmit={handleSubmit}>
-                        <div className='div-main'>
+                        <div className='div-main-login'>
                             <div className='input-name-login'>
                                 <TextField required id='outlined-basic' label='Nome' variant='outlined' className='input-name-login grid-xs-12' value={name} onChange={event => setName(event.target.value)} />
                             </div>
