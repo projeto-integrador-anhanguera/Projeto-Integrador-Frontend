@@ -36,37 +36,37 @@ function Cards(props) {
     ]   
 
     return (
-    <>
-        {cards.map(index => {
-            return ( 
-                <Card className={cardStyles} key={index}>
-                    <CardContent>
-                    { isChart ?
-                        charts.map((chart, index) => {
-                                return <HighchartsReact key={index} highcharts={Highcharts} options={chart} />  
-                            }
-                        ) : 
-                        
-                        <div className={styleUlDiv}>
-                            <AvatarComponent />
-                            <div className={alignDivUl}>
-                                <ul className={styleUl}>
-                                    <li className={styleLi}>
-                                        <span className={styleSpan}>NOME DO USUÁRIO:</span>
-                                    </li>
-                                    <li className={styleLi}>
-                                        <span className={styleSpan}>E-mail:</span>
-                                    </li>
-                                </ul>
+        <>
+            {cards.map(index => {
+                return ( 
+                    <Card className={cardStyles} key={index}>
+                        <CardContent>
+                        { isChart ?
+                            charts.map((chart, index) => {
+                                    return <HighchartsReact key={index} highcharts={Highcharts} options={chart} />  
+                                }
+                            ) : 
+                            
+                            <div className={styleUlDiv}>
+                                <AvatarComponent />
+                                <div className={alignDivUl}>
+                                    <ul className={styleUl}>
+                                        <li className={styleLi}>
+                                            <span className={styleSpan}>NOME DO USUÁRIO:</span>
+                                        </li>
+                                        <li className={styleLi}>
+                                            <span className={styleSpan}>E-mail:</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <Button variant="contained" color="primary" ariaLabel="edit" size="small" text='Editar' />
                             </div>
-                            <Button variant="contained" color="primary" ariaLabel="edit" size="small" text='Editar' />
-                        </div>
-                    }
-                    </CardContent>
-                </Card>
-            )
-        })}
-    </>
+                        }
+                        </CardContent>
+                    </Card>
+                )
+            })}
+        </>
     );
 }
 
