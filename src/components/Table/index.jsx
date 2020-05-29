@@ -21,6 +21,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import Button from '../Button';
 import Modal from '../Modal';
 import api from '../../services/api';
+import createMixins from '@material-ui/core/styles/createMixins';
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -101,7 +102,7 @@ const useStyles2 = makeStyles({
     table: {
         minWidth: 500,
     },
-        alignTable: {
+    alignTable: {
         marginTop: '20px'
     }
 });
@@ -112,6 +113,8 @@ export default function TableComponent(props) {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [dataModal, setDataModal] = useState({});
+    const [isEditModal, setIsEditModal] = useState(false);
     const data = props.data;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
@@ -125,11 +128,27 @@ export default function TableComponent(props) {
     };
 
     const handleOpenModal = (state) => {
+        setIsEditModal(false);
         !state ? setOpenModal(false) : setOpenModal(true);
     }
 
-    async function handleDelete(id) {
-        const response = await api.delete(`/api/cars/${id}`);
+    function handleOpenModalEdit(state) {
+        !state ? setOpenModal(true) : setOpenModal(false);
+    }
+
+    async function handleOpenModalEditGetData(state, licensePlate, isEditModal) {
+        const response = await api.get(`/api/cars/${licensePlate}`);
+        setIsEditModal(true);
+        setDataModal(response);
+        handleOpenModalEdit(state);
+    }
+
+    async function handleDelete(licensePlate) {
+        const response = await api.delete('/api/cars', {
+            data: {
+                licensePlate: licensePlate
+            }
+        });
 
         return response;
     }
@@ -140,6 +159,8 @@ export default function TableComponent(props) {
             <Modal 
                 state={openModal} 
                 handleOpenModal={handleOpenModal} 
+                dataModal={dataModal.data}
+                isEditModal={isEditModal}
             />
             <TableContainer component={Paper} className={classes.alignTable}>
                 <Table className={classes.table} aria-label="custom pagination table">
@@ -172,12 +193,12 @@ export default function TableComponent(props) {
                                     <TableCell align="right">{row.ownerName}</TableCell>
                                     <TableCell align="right">{row.ownerCNH}</TableCell>
                                     <TableCell align="right">
-                                        <IconButton aria-label="delete" onClick={() => handleDelete(row.id)}>
+                                        <IconButton aria-label="delete" onClick={() => handleDelete(row.licensePlate)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell> 
                                     <TableCell align="right">
-                                        <IconButton aria-label="edit">
+                                        <IconButton aria-label="edit" onClick={() => handleOpenModalEditGetData(openModal, row.licensePlate, isEditModal)}>
                                             <EditIcon />
                                         </IconButton>
                                     </TableCell> 
@@ -195,13 +216,13 @@ export default function TableComponent(props) {
                     <TableFooter>
                         <TableRow>
                             <TablePagination
-                                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
                                 colSpan={3}
                                 count={data.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 SelectProps={{
-                                    inputProps: { 'aria-label': 'rows per page' },
+                                    inputProps: { 'aria-label': 'Linhas por página' },
                                     native: true,
                                 }}
                                 onChangePage={handleChangePage}

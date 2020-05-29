@@ -9,7 +9,6 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'flex-end',
         padding: theme.spacing(0, 1),
-        // necessary for content to be below app bar
         ...theme.mixins.toolbar,
     },
     content: {
@@ -23,14 +22,14 @@ const useStyles = makeStyles((theme) => ({
 
 function RegisterCar() {
     const classes = useStyles();
-    const [dataTable, setDataTable] = useState([]);
+    // const [dataTable, setDataTable] = useState([]);
     const [showDataTable, setShowDataTable] = useState([]);
 
     useEffect(() => {
         async function loadCars() {
             const response = await api.get('/api/cars');
 
-            setDataTable(response.data)
+            // setDataTable(response.data)
             setShowDataTable(response.data)
         }
 
