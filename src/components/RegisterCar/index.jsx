@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TableComponent from '../Table';
 import api from '../../services/api';
@@ -22,26 +22,27 @@ const useStyles = makeStyles((theme) => ({
 
 function RegisterCar() {
     const classes = useStyles();
-    // const [dataTable, setDataTable] = useState([]);
     const [showDataTable, setShowDataTable] = useState([]);
+    const [data, setData] = useState([]);
+
+    const getDataTable = async () => {
+        const response = await api.get('/api/cars');
+            
+        setShowDataTable(response.data)
+        // setData(response.data)
+    }
 
     useEffect(() => {
-        async function loadCars() {
-            const response = await api.get('/api/cars');
-
-            // setDataTable(response.data)
-            setShowDataTable(response.data)
-        }
-
-        loadCars()
-    }, []);
-
+        getDataTable();
+        // setData(showDataTable)
+    }, [data]);
+    
     return (
         <main className={classes.content}>
             <div className={classes.toolbar} />
-            <TableComponent data={showDataTable} />
+            <TableComponent data={showDataTable} idTable='registerCar' />
         </main>
     )
 }
 
-export default memo(RegisterCar);
+export default RegisterCar;

@@ -1,4 +1,4 @@
-import React, { useState, Fragment,useEffect } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -20,8 +20,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Button from '../Button';
 import Modal from '../Modal';
+import SnackbarComponent from '../Snackbar';
 import api from '../../services/api';
-import createMixins from '@material-ui/core/styles/createMixins';
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -100,10 +100,13 @@ TablePaginationActions.propTypes = {
 
 const useStyles2 = makeStyles({
     table: {
-        minWidth: 500,
+        maxWidth: 500,
     },
     alignTable: {
         marginTop: '20px'
+    },
+    tableCar: {
+        maxWidth: 600,
     }
 });
 
@@ -111,13 +114,16 @@ export default function TableComponent(props) {
     const classes = useStyles2();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [dataModal, setDataModal] = useState({});
     const [isEditModal, setIsEditModal] = useState(false);
-    const data = props.data;
+    const [messageCarDelete, setMessageCarDelete] = useState('');
+    const [severitySnackbar, setSeveritySnackbar] = useState('');
+    const [deleteSuccess, setDeleteSuccess] = useState(false);
+    // const [data1, setData1] = useState([]);
+    const { data, idTable } = props;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
-
+    console.log(data)
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -144,95 +150,157 @@ export default function TableComponent(props) {
     }
 
     async function handleDelete(licensePlate) {
-        const response = await api.delete('/api/cars', {
-            data: {
-                licensePlate: licensePlate
-            }
-        });
+        const response = await api.delete(`/api/cars/${licensePlate}`);
+
+        if (response.data.success) {
+            setDeleteSuccess(true);
+            setMessageCarDelete(response.data.message);
+            setSeveritySnackbar('success');
+        } else {
+            setDeleteSuccess(true);
+            setMessageCarDelete(response.data.message);
+            setSeveritySnackbar('error');
+        }
 
         return response;
     }
 
+    // useEffect(() => {
+    //     handleDelete();
+    // }, []);
+
+    const getContentTableRegisterCar = () => {
+        return (
+            <>
+                <Button variant="contained" color="primary" ariaLabel="adicionar" size="small" text='Adicionar' icon={<AddIcon />} onClick={handleOpenModal} />
+                <Modal
+                    state={openModal}
+                    handleOpenModal={handleOpenModal}
+                    dataModal={dataModal.data}
+                    isEditModal={isEditModal}
+                />
+                <TableContainer component={Paper} className={classes.alignTable}>
+                    <Table className={classes.table2} aria-label="custom pagination table">
+                        <TableHead>
+                            <TableRow>
+                                <StyledTableCell>Modelo</StyledTableCell>
+                                <StyledTableCell align="right">Status</StyledTableCell>
+                                <StyledTableCell align="right">Placa</StyledTableCell>
+                                <StyledTableCell align="right">Data do Roubo</StyledTableCell>
+                                <StyledTableCell align="right">Data de Recuperação</StyledTableCell>
+                                <StyledTableCell align="right">Dono do Carro</StyledTableCell>
+                                <StyledTableCell align="right">CNH dono do Carro</StyledTableCell>
+                                <StyledTableCell align="right"></StyledTableCell>
+                                <StyledTableCell align="right"></StyledTableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {(rowsPerPage > 0
+                                ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : data
+                            ).map(row => {
+                                return (
+                                    <Fragment key={row.id}>
+                                        <TableRow key={row.id}>
+                                            <TableCell component="th" scope="row">{row.model}</TableCell>
+                                            <TableCell align="right">{row.status}</TableCell>
+                                            <TableCell align="right">{row.licensePlate}</TableCell>
+                                            <TableCell align="right">{row.robberyDate}</TableCell>
+                                            <TableCell align="right">{row.recoveryDate}</TableCell>
+                                            <TableCell align="right">{row.ownerName}</TableCell>
+                                            <TableCell align="right">{row.ownerCNH}</TableCell>
+                                            <TableCell align="right">
+                                                <IconButton aria-label="delete" onClick={() => handleDelete(row.licensePlate)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <IconButton aria-label="edit" onClick={() => handleOpenModalEditGetData(openModal, row.licensePlate, isEditModal)}>
+                                                    <EditIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    </Fragment>
+                                )
+                            })}
+
+                            {emptyRows > 0 && (
+                                <TableRow style={{ height: 53 * emptyRows }}>
+                                    <TableCell colSpan={9} />
+                                </TableRow>
+                            )}
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+                                    colSpan={9}
+                                    count={data.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        inputProps: { 'aria-label': 'Linhas por página' }
+                                    }}
+                                    onChangePage={handleChangePage}
+                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActions}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                    {deleteSuccess ? <SnackbarComponent severity={severitySnackbar} message={messageCarDelete} /> : null}
+                </TableContainer>
+            </>
+        )
+    }
+
+    const getContentTableSearch = () => {
+        return (
+            <>
+                <TableContainer component={Paper} className={classes.alignTable}>
+                    <Table className={classes.tableCar} aria-label="custom pagination table">
+                        <TableHead>
+                            <TableRow>
+                                <StyledTableCell>Modelo</StyledTableCell>
+                                <StyledTableCell align="right">Status</StyledTableCell>
+                                <StyledTableCell align="right">Placa</StyledTableCell>
+                                <StyledTableCell align="right">Data do Roubo</StyledTableCell>
+                                <StyledTableCell align="right">Data de Recuperação</StyledTableCell>
+                                <StyledTableCell align="right">Dono do Carro</StyledTableCell>
+                                <StyledTableCell align="right">CNH dono do Carro</StyledTableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {data.length !== 0 && (
+                                <TableRow key={data.id}>
+                                    <TableCell component="th" scope="row">{data.model}</TableCell>
+                                    <TableCell align="right">{data.status}</TableCell>
+                                    <TableCell align="right">{data.licensePlate}</TableCell>
+                                    <TableCell align="right">{data.robberyDate}</TableCell>
+                                    <TableCell align="right">{data.recoveryDate}</TableCell>
+                                    <TableCell align="right">{data.ownerName}</TableCell>
+                                    <TableCell align="right">{data.ownerCNH}</TableCell>
+                                </TableRow>   
+                            )}
+
+                            {data.length === 0 && (
+                                <TableRow style={{ height: emptyRows }}>
+                                    <TableCell colSpan={5}>Digite a placa para consultar.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </>
+        )
+    }
+
     return (
         <>
-            <Button variant="contained" color="primary" ariaLabel="adicionar" size="small" text='Adicionar' icon={<AddIcon />} onClick={handleOpenModal}/>
-            <Modal 
-                state={openModal} 
-                handleOpenModal={handleOpenModal} 
-                dataModal={dataModal.data}
-                isEditModal={isEditModal}
-            />
-            <TableContainer component={Paper} className={classes.alignTable}>
-                <Table className={classes.table} aria-label="custom pagination table">
-                    <TableHead>
-                        <TableRow>
-                            <StyledTableCell>Modelo</StyledTableCell>
-                            <StyledTableCell align="right">Status</StyledTableCell>
-                            <StyledTableCell align="right">Placa</StyledTableCell>
-                            <StyledTableCell align="right">Data do Roubo</StyledTableCell>
-                            <StyledTableCell align="right">Data de Recuperação</StyledTableCell>
-                            <StyledTableCell align="right">Dono do Carro</StyledTableCell>
-                            <StyledTableCell align="right">CNH dono do Carro</StyledTableCell>
-                            <StyledTableCell align="right"></StyledTableCell>
-                            <StyledTableCell align="right"></StyledTableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    {(rowsPerPage > 0
-                        ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        : data
-                    ).map(row => {
-                        return (
-                            <Fragment key={row.id}>
-                                <TableRow key={row.id}>
-                                    <TableCell component="th" scope="row">{row.model}</TableCell>
-                                    <TableCell align="right">{row.status}</TableCell>
-                                    <TableCell align="right">{row.licensePlate}</TableCell>
-                                    <TableCell align="right">{row.robberyDate}</TableCell>
-                                    <TableCell align="right">{row.recoveryDate}</TableCell>
-                                    <TableCell align="right">{row.ownerName}</TableCell>
-                                    <TableCell align="right">{row.ownerCNH}</TableCell>
-                                    <TableCell align="right">
-                                        <IconButton aria-label="delete" onClick={() => handleDelete(row.licensePlate)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </TableCell> 
-                                    <TableCell align="right">
-                                        <IconButton aria-label="edit" onClick={() => handleOpenModalEditGetData(openModal, row.licensePlate, isEditModal)}>
-                                            <EditIcon />
-                                        </IconButton>
-                                    </TableCell> 
-                                </TableRow>
-                            </Fragment>
-                        )
-                    })}
-
-                    {emptyRows > 0 && (
-                        <TableRow style={{ height: 53 * emptyRows }}>
-                            <TableCell colSpan={9} />
-                        </TableRow>
-                    )} 
-                    </TableBody>
-                    <TableFooter>
-                        <TableRow>
-                            <TablePagination
-                                rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
-                                colSpan={3}
-                                count={data.length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                SelectProps={{
-                                    inputProps: { 'aria-label': 'Linhas por página' },
-                                    native: true,
-                                }}
-                                onChangePage={handleChangePage}
-                                onChangeRowsPerPage={handleChangeRowsPerPage}
-                                ActionsComponent={TablePaginationActions}
-                            />
-                        </TableRow> 
-                    </TableFooter> 
-                </Table>
-            </TableContainer>
+            {idTable === 'registerCar' ?
+                getContentTableRegisterCar()
+                : getContentTableSearch()
+            }
         </>
     );
 }

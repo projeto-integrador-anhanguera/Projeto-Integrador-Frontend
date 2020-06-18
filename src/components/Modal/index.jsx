@@ -10,9 +10,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '../Button';
+import SnackbarComponent from '../Snackbar';
 import InputMask from "react-input-mask";
 import api from '../../services/api';
-import SnackbarComponent from '../Snackbar';
 
 const styles = (theme) => ({
   root: {
@@ -56,6 +56,7 @@ const DialogActions = withStyles((theme) => ({
 
 export default function Modal({ state, handleOpenModal, dataModal, isEditModal }) {
   const [model, setModel] = useState('');
+  const [modelEdit, setModelEdit] = useState('');
   const [status, setStatus] = useState('');
   const [licensePlate, setLicensePlate] = useState('');
   const [robberyDate, setRobberyDate] = useState('');
@@ -63,13 +64,11 @@ export default function Modal({ state, handleOpenModal, dataModal, isEditModal }
   const [recoveryDate, setRecoveryDate] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState(false);
-  
+  const [messageCarRegister, setMessageCarRegister] = useState('');
+  const [severitySnackbar, setSeveritySnackbar] = useState('');
+
   const handleClose = () => {
     handleOpenModal(false);
-  }
-
-  const exibeAlert = (message, status) => {
-    return <SnackbarComponent severity={status === 200 ? 'success' : 'danger'} message={message} />;
   }
 
   async function handleSubmit(e) {
@@ -77,19 +76,22 @@ export default function Modal({ state, handleOpenModal, dataModal, isEditModal }
 
     const response = await api.post('/api/cars', {
       model,
-      status: 'tal status',
-      licensePlate: 'AAA-0004',
-      robberyDate: '2020-02-02',
-      recoveryDate: '2020-02-02',
-      ownerName: 'iaiusahf',
-      ownerCNH: 444444,
+      status,
+      licensePlate,
+      robberyDate,
+      recoveryDate,
+      ownerName,
+      ownerCNH
     });
 
-    if (response.status === 200) {
+    if (response.data.success) {
       setRegisterSuccess(true);
-      return exibeAlert(response.data.message, response.status);
-    } else if (response.status === 400) {
-      return exibeAlert(response.message, response.status);
+      setMessageCarRegister(response.data.message);
+      setSeveritySnackbar('success');
+    } else {
+      setRegisterSuccess(true);
+      setMessageCarRegister(response.data.message);
+      setSeveritySnackbar('error');
     }
   }
 
@@ -98,54 +100,53 @@ export default function Modal({ state, handleOpenModal, dataModal, isEditModal }
     return (
       <>
         {dataModal &&
-           <Dialog open={state} onClose={handleClose} aria-labelledby="form-dialog-title">
-           <DialogTitle id="form-dialog-title">Editar Veículo</DialogTitle>
-           <form onSubmit={handleSubmit}>
-             <DialogContent>
-               <DialogContentText>
-                 Para edição de um veículo, altere os dados abaixo.
+          <Dialog open={state} onClose={handleClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Editar Veículo</DialogTitle>
+            <form onSubmit={handleSubmit}>
+              <DialogContent>
+                <DialogContentText>
+                  Para edição de um veículo, altere os dados abaixo.
                </DialogContentText>
-               <div className='input-modal-form'>
-                 <div className='align-input-modal-form'>
-                   <TextField required id='outlined-basic' label='Modelo' margin="dense" className='input-name' value={dataModal.model} onChange={event => setModel(event.target.value)} />
-                 </div>
-                 <div className='align-input-modal-form'>
-                   <TextField id='outlined-basic' label='Status' margin="dense" className='input-name' value={dataModal.status} onChange={event => setStatus(event.target.value)} />
-                 </div>
-               </div>
-               <div className='input-modal-form'>
-                 <div className='align-input-modal-form'>
-                   <TextField id='outlined-basic' label='Placa' margin="dense" className='input-name' value={dataModal.licensePlate} onChange={event => setLicensePlate(event.target.value)} />
-                 </div>
-                 <div className='align-input-modal-form'>
-                   <TextField id='outlined-basic' label='Data do Roubo' margin="dense" className='input-name' type="text" value={dataModal.robberyDate} onChange={event => setRobberyDate(event.target.value)} >
-                     <InputMask mask="99/99/9999" maskChar=" " />
-                   </TextField>
-                 </div>
-               </div>
-               <div className='input-modal-form'>
-                 <div className='align-input-modal-form'>
-                   <TextField id='outlined-basic' label='CNH dono do carro' margin="dense" className='input-name' value={dataModal.ownerCNH} onChange={event => setOwnerCNH(event.target.value)} />
-                 </div>
-                 <div className='align-input-modal-form'>
-                   <TextField id='outlined-basic' label='Data de Recuperação' margin="dense" className='input-name' type="text" value={dataModal.recoveryDate} onChange={event => setRecoveryDate(event.target.value)} >
-                     <InputMask mask="99/99/9999" maskChar=" " />
-                   </TextField>
-                 </div>
-               </div>
-               <div>
-                 <div className='align-input-modal-form'>
-                   <TextField id='outlined-basic' label='Dono do Carro' margin="dense" className='input-name' value={dataModal.ownerName} onChange={event => setOwnerName(event.target.value)} />
-                 </div>
-               </div>
-             </DialogContent>
-             <DialogActions>
-               <Button onClick={handleClose} color="default" text='Cancelar' variant='contained' />
-               <Button color="primary" text='Salvar' variant='contained' type='submit' />
-             </DialogActions>
-           </form>
-         </Dialog>
-        //  {registerSuccess ? exibeAlert() : null}
+                <div className='input-modal-form'>
+                  <div className='align-input-modal-form'>
+                    <TextField required id='outlined-basic1' label='Modelo' margin="dense" className='input-name' value={dataModal.model} handleChange={event => setModelEdit(event.target.value)} />
+                  </div>
+                  <div className='align-input-modal-form'>
+                    <TextField id='outlined-basic' label='Status' margin="dense" className='input-name' value={dataModal.status} onChange={event => setStatus(event.target.value)} />
+                  </div>
+                </div>
+                <div className='input-modal-form'>
+                  <div className='align-input-modal-form'>
+                    <TextField id='outlined-basic' label='Placa' margin="dense" className='input-name' value={dataModal.licensePlate} onChange={event => setLicensePlate(event.target.value)} />
+                  </div>
+                  <div className='align-input-modal-form'>
+                    <TextField id='outlined-basic' label='Data do Roubo' margin="dense" className='input-name' type="text" value={dataModal.robberyDate} onChange={event => setRobberyDate(event.target.value)} >
+                      <InputMask mask="99/99/9999" maskChar=" " />
+                    </TextField>
+                  </div>
+                </div>
+                <div className='input-modal-form'>
+                  <div className='align-input-modal-form'>
+                    <TextField id='outlined-basic' label='CNH dono do carro' margin="dense" className='input-name' value={dataModal.ownerCNH} onChange={event => setOwnerCNH(event.target.value)} />
+                  </div>
+                  <div className='align-input-modal-form'>
+                    <TextField id='outlined-basic' label='Data de Recuperação' margin="dense" className='input-name' type="text" value={dataModal.recoveryDate} onChange={event => setRecoveryDate(event.target.value)} >
+                      <InputMask mask="99/99/9999" maskChar=" " />
+                    </TextField>
+                  </div>
+                </div>
+                <div>
+                  <div className='align-input-modal-form'>
+                    <TextField id='outlined-basic' label='Dono do Carro' margin="dense" className='input-name' value={dataModal.ownerName} onChange={event => setOwnerName(event.target.value)} />
+                  </div>
+                </div>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose} color="default" text='Cancelar' variant='contained' />
+                <Button color="primary" text='Salvar' variant='contained' type='submit' />
+              </DialogActions>
+            </form>
+          </Dialog>
         }
       </>
     )
@@ -174,9 +175,9 @@ export default function Modal({ state, handleOpenModal, dataModal, isEditModal }
                   <TextField id='outlined-basic' label='Placa' margin="dense" className='input-name' value={licensePlate} onChange={event => setLicensePlate(event.target.value)} />
                 </div>
                 <div className='align-input-modal-form'>
-                  <TextField id='outlined-basic' label='Data do Roubo' margin="dense" className='input-name' type="text" value={robberyDate} onChange={event => setRobberyDate(event.target.value)} >
-                    <InputMask mask="99/99/9999" maskChar=" " />
-                  </TextField>
+                  <InputMask mask="9999-99-99" maskChar=" " value={robberyDate} onChange={event => setRobberyDate(event.target.value)} >
+                    {() => <TextField id='outlined-basic' label='Data do Roubo' margin="dense" className='input-name' type="text" />}
+                  </InputMask>
                 </div>
               </div>
               <div className='input-modal-form'>
@@ -185,7 +186,7 @@ export default function Modal({ state, handleOpenModal, dataModal, isEditModal }
                 </div>
                 <div className='align-input-modal-form'>
                   <TextField id='outlined-basic' label='Data de Recuperação' margin="dense" className='input-name' type="text" value={recoveryDate} onChange={event => setRecoveryDate(event.target.value)} >
-                    <InputMask mask="99/99/9999" maskChar=" " />
+                    <InputMask mask="9999-99-99" maskChar=" " />
                   </TextField>
                 </div>
               </div>
@@ -201,7 +202,7 @@ export default function Modal({ state, handleOpenModal, dataModal, isEditModal }
             </DialogActions>
           </form>
         </Dialog>
-        {registerSuccess ? exibeAlert() : null}
+        {registerSuccess ? <SnackbarComponent severity={severitySnackbar} message={messageCarRegister} /> : null}
       </>
     )
   }
