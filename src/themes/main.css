@@ -61,6 +61,7 @@ body {
     display: flex;
     justify-content: space-between;
     top: 36px;
+    width: 100%;
 }
 
 .form-login {
@@ -106,12 +107,14 @@ body {
     display: flex;
     justify-content: space-between;
     top: 48px;
+    width: 100%;
 }
 
 .button-login-register {
     display: flex;
     justify-content: space-between;
     top: 48px;
+    width: 100%;
 }
 
 .input-modal-form {
@@ -132,4 +135,33 @@ body {
 
 .MuiDialog-paperWidthSm {
     width: 100em !important;
+}
+
+.MuiDrawer-paper {
+    background-color: #009ee3 !important;
+    color: white !important;
+}
+
+.align-cards-statistics {
+    /* display: inline-flex; */
+}
+
+.btn-holder {
+    margin-top: 80px;
+}
+
+.text-span-table-search {
+    text-align: center;
+    color: #333333;
+    font-size: 18px; 
+    fill: #333333; 
+    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+    text-align: center;
+    padding: 0 0 0 12em;
+}
+
+.width-table-search {
+    height: 52.5vh;
+    /* max-width: 600px;
+    max-height: 500px; */
 }

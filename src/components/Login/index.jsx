@@ -1,22 +1,27 @@
 import React, { useState } from 'react'
 import TextField from '@material-ui/core/TextField';
 import Button from '../Button';
+import SnackbarComponent from '../Snackbar';
 import api from '../../services/api';
 
 function Login({ history }) {
-
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
+    const [noValidateUser, setNoValidateUser] = useState(true);
     
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const response = await api.post('/login', {
+        const response = await api.post('/api/authenticate', {
             name, password
         });
 
-        if (response.status === 200) {
+        if (response.data.success) {
+            localStorage.setItem('Usuario', response.data.name)
+            setNoValidateUser(true);
             history.push('/estatisticas');
+        } else {
+            setNoValidateUser(false);
         }
     }
 
@@ -37,15 +42,14 @@ function Login({ history }) {
                             <div className='input-password-login'>
                                 <TextField required id='outlined-basic' label='Password' type="password" variant='outlined' className='input-password-login grid-xs-12' value={password} onChange={event => setPassword(event.target.value)} />
                             </div>
-                            <div className='button-login'>
+                            <div className='align-buttons-login'>
                                 <Button variant='contained' color='primary' className='button-login grid-xs-12' type='submit' text='Login' />
-                            </div>
-                            <div className='button-login-register'>
                                 <Button variant='contained' color='primary' className='button-login-register grid-xs-12' type='submit' onClick={() => renderRegister()} text='Cadastre-se' />
                             </div>
                         </div>
                     </form>
                 </div>
+                {!noValidateUser ? <SnackbarComponent severity='error' message='Nome ou senha incorretos.' /> : null}
             </div>
         </>
     );

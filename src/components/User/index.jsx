@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Cards from '../Cards'
+import api from '../../services/api';
 
 const useStyles = makeStyles((theme) => ({
     toolbar: {
@@ -25,13 +26,14 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden'
     },
     styleLi: {
-        color: '#009a14',
+        color: 'rgba(0, 0, 0, 0.644)',
         marginBottom: '6px'
     },
     styleSpan: {
         color: '#333',
         display: 'block',
-        fontWeight: '600'
+        fontWeight: '600',
+        margin: '5px 0 0 0'
     },
     styleUlDiv: {
         display: 'flex'
@@ -41,8 +43,23 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function User() {
+function User({ history }) {
     const classes = useStyles();
+    const [dataUser, setDataUser] = useState({});
+
+    useEffect(() => {
+        const loadUser = async () => {
+            const userLogged = localStorage.getItem('Usuario');
+            const response2 = await api.get('/api/user');
+            const filterUser = response2.data.filter(el => el.name === userLogged)
+            const userId = filterUser.reduce(el => el.id);
+            const response = await api.get(`/api/user/${userId.id}`);
+
+            setDataUser(response.data);
+        }
+
+        loadUser();
+    }, []);
     
     return (
         <main className={classes.content}>
@@ -56,6 +73,8 @@ function User() {
                     styleSpan={classes.styleSpan} 
                     styleUlDiv={classes.styleUlDiv}
                     alignDivUl={classes.alignDivUl}
+                    history={history}
+                    userData={dataUser}
                 />
             </Typography>
         </main>

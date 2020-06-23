@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    backgroundColor: '#009ee3'
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 36
   },
   hide: {
     display: 'none',
@@ -84,7 +85,10 @@ const useStyles = makeStyles((theme) => ({
   },
   link: {
     textDecoration: 'none',
-    color: 'black'
+    color: 'white'
+  },
+  colorButtonMenu: {
+    color: 'white'
   }
 }));
 
@@ -141,7 +145,7 @@ function Main({ children }) {
         }}
       >
         <div className={classes.toolbar}>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={handleDrawerClose} className={classes.colorButtonMenu}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </div>
@@ -149,7 +153,7 @@ function Main({ children }) {
         <List>
           <Link to='/usuario' className={classes.link}> 
             <ListItem button>
-              <ListItemIcon><AccountCircleIcon /></ListItemIcon>
+              <ListItemIcon className={classes.colorButtonMenu}><AccountCircleIcon /></ListItemIcon>
               <ListItemText primary='Usuário' />
             </ListItem>
           </Link>
@@ -158,13 +162,13 @@ function Main({ children }) {
         <List>
           <Link to='/estatisticas' className={classes.link}> 
             <ListItem button>
-              <ListItemIcon><DashboardRoundedIcon /></ListItemIcon>
+              <ListItemIcon className={classes.colorButtonMenu}><DashboardRoundedIcon /></ListItemIcon>
               <ListItemText primary='Estatísticas' />
             </ListItem>
           </Link>
           <Link to='/veiculos' className={classes.link}> 
             <ListItem button>
-              <ListItemIcon><TableChartRoundedIcon /></ListItemIcon>
+              <ListItemIcon className={classes.colorButtonMenu}><TableChartRoundedIcon /></ListItemIcon>
               <ListItemText primary='Cadastro de Veículos' />
             </ListItem>
           </Link>
